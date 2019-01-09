@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!-- 
+	1、精确优先（方法级优先，接口级次之，全局配置在次之）
+	2、消费者设置优先（级别一样的情况下）
+	 -->
+	 <!-- timeout="0"  默认是1000ms -->
+	 <!-- retries="3"  默认是2次 ，可以设置为0-->
+	<!-- 
+	幂等操作（设置重试次数【查询，修改，删除等操作】）、非幂等操作（不能设置重试操作【新增】）
+	
+	 -->
+
+    <!-- 应用名字 -->
+    <dubbo:application name="dubbo-consumer"/>
+    
+    <!-- 指定注册中心的地址 -->
+    <dubbo:registry address="zookeeper://192.168.36.131:2181"/>
+    
+    <!--声明需要调用的远程服务的接口 -->
+    <dubbo:reference id="userService" check="false" interface="com.ncu.service.UserService"/>
+    
+    <!-- 配置监控中心，protocol,address监控中心的协议与地址,二者任选一个 -->
+    <!-- <dubbo:monitor protocol="registry"></dubbo:monitor> -->
+    <!-- <dubbo:monitor address="192.168.36.131:7070"></dubbo:monitor> -->
+    
+    
+    <context:component-scan base-package="com.ncu.service"></context:component-scan>
+</beans>
