@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ncu.springcloud.dao.DeptDao">
+	<!-- parameterType代表输入参数类型 ，，resultType代表返回类型-->
+	<select id="findById" resultType="Dept" parameterType="Long">
+		select * from dept where deptno = #{deptno};
+	</select>
+	
+	<select id="findAll" resultType="Dept">
+		select * from dept
+	</select>
+	
+	<insert id="addDept" parameterType="Dept">
+		insert into dept(dname,db_source) values(#{dept.dname},DATABASE());
+	</insert>
+	
+	<delete id="deleteById" parameterType="Long">
+		delete from dept where deptno = #{deptno};
+	</delete>
+	
+	<update id="updateDept" parameterType="Dept">
+		update dept set dname=#{dname},db_source=DATABASE() where deptno=#{deptno}
+	</update>
+	
+</mapper>

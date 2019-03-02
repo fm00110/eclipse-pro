@@ -1,0 +1,34 @@
+
+eureka: 
+  client:   #客户端注册进eureka服务列表内,defaultZone要和server端一样,这是集群配置，将该服务注册到集群中
+    serviceUrl: 
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
+  instance: 
+    instance-id: microservicecloud-provider-dept1    #修改服务名称，自定义服务名称
+    prefer-ip-address: true   #在eureka页面访问路径可以显示ip地址
+info: 
+  app.name: ncu-microservicecloud
+  build.artifactId: microservicecloud-provider-dept
+  build.version: 0.0.1-SNAPSHOT
+  company.name: www.ncu.com  
+mybatis: 
+  config-location: "classpath:mybatis/mybatis.cfg.xml"   #mybatis配置文件所在路径
+  mapper-locations: 
+    - "classpath:mybatis/mapper/**/*.xml"    #mapper映射文件
+  type-aliases-package: com.ncu.springcloud.entities    #所有Entities别名类所在包
+server: 
+  port: 8001
+spring: 
+  application: 
+    name: microservicecloud-dept   #对外暴露的微服务名称
+  datasource: 
+    dbcp2: 
+      initial-size: 5   #初始化连接数
+      max-total: 5   #最大连接数
+      max-wait-millis: 200   #等待连接获取的最大超时时间
+      min-idle: 5  #数据库连接池的最小维持连接数
+    driver-class-name: org.gjt.mm.mysql.Driver   #MySQL驱动
+    password: 1234
+    type: com.alibaba.druid.pool.DruidDataSource   #当前数据源操作类型
+    url: "jdbc:mysql://localhost:3306/cloudDB01"     #数据库名称
+    username: root

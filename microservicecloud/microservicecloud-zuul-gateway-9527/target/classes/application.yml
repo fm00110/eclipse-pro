@@ -1,0 +1,27 @@
+server:
+  port: 9527
+spring:
+  application:  #对外暴露的微服务的名称
+    name: microservicecloud-zuul-gateway
+    
+eureka:
+  client:
+    service-url:  #集群注册地址
+      defaultZone: http://eureka7001.com:7001/eureka,http://eureka7002.com:7002/eureka,http://eureka7003.com:7003/eureka
+  instance:
+    instance-id: gateway-9527.com    #实例名称，每个实例名称都不想同
+    prefer-ip-address: true
+
+info:
+  app.name: ncu.microservicecloud
+  company.com: www.ncu.com
+  build.artifactId: microservicecloud-zuul-gateway-9527
+  build.version: 0.0.1-SNAPSHOT
+zuul:
+  #ignored-services: "*" 忽略所有真实名字访问
+  prefix: /ncu    #添加前缀  最终域名访问地址http://myzuul.com:9527/ncu/mydept/dept/get/2
+  ignored-services: microservicecloud-dept  #忽略真实名字地址访问，且第一个服务名前面不能加-否则报错
+  routes:
+    mydept.serviceId: microservicecloud-dept   #将路径映射，此时两种路径都能访问，不安全
+    mydept.path: /mydept/**
+ 

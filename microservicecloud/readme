@@ -1,0 +1,69 @@
+某时刻某一个微服务不可用了，eureka不会立即清除，依旧会对该微服务的信息进行保存
+eureka具有自我保护意识
+eureka实现了AP模式，就是，高可用，高稳定没有实现C(强一致性)
+RDBMS（mysql oracle sqlserver）----->acid
+NOSQL(redis mongdb )--------------->CAP
+CAP  
+	C: consistency  强一致性
+	A: avlilability  可用性
+	P： partition tolerance  分区容错性
+zookeeper保证cp，在主节点挂了之后，重新选举主节点时，该系统不可用
+eureka保证ap，各个节点平等，具有自我保护机制，几个节点挂掉不会影响其他节点的使用
+
+spring cloud ribbon是基于 Netflix ribbon是实现的一套客户端 负载均衡工具
+主要功能是提供客户端的软件负载均衡算法
+
+在消费端的主启动类上添加@RibbonClient(name="MICROSERVICECLOUD",configuration=MySelfRule.class)
+在启动该微服务的时候就能去加载我们自定义的Ribbon配置类，从而使配置生效
+而且这个自定义配置类不能放在@ComponentScan所扫描的当前包以及子包下否则这个自定义的配置类就会被所有的Ribbon客户端所共享
+就达不到特殊化定制的目标了
+@SpingBootApplication就包含了@ComponentScan注解
+
+feign是一个声明式的WEB服务客户端，使得编写WEB服务客户端变得非常容易
+ribbon调用远程的方式是通过服务名称，而feign是通过接口，然后在接口上添加注解
+将相关的service放在公共模块api模块下，以便其他模块调用，所以在consumer-feign和qpi模块都要引入feign的相关依赖
+
+ribbon与nginx的区别：
+ribbon是客户端的负载均衡 而，nginx是服务端的负载均衡  
+
+服务雪崩：
+	多个服务之间调用的时候，假设服务A要调用服务B、C，而服务B、C又要调用其他的微服务，这就是所谓的“扇出”，如果扇出的链路上
+	某个微服务的调用响应时间过长或者不可用，对于服务A的调用就会u占用越来越多的系统资源，从而引起系统崩溃，所谓的雪崩效应
+对于高流量的应用来说，单一的后端一阿里可能会导致所有的服务器上的所有资源在几秒钟内饱和，比失败更糟糕的是这些应用程序还可能导致
+服务之间的延迟增加，备份队列，线程，和其他系统资源紧张，导致整个系统发生更多的级联故障	这些都表示需要对故障和延迟进行
+隔离和管理，以便单个依赖关系的失败，不能取消整个应用程序或系统
+
+hystrix是一个处理分布式系统的延迟和容错的开源库，在分布式系统里，许多依赖不可避免的会调用失败，比如超时，异常等，hystrix能够
+保证一个依赖出问题的情况下，不会导致整体服务失败，避免级联故障，以提高分布式系统的弹性，，在延迟和容错是它会想调用方法返回一个符合预期的，
+可处理的备选响应，而不是长时间的等待或调用失败------->避免单个调用导致整个系统挂了
+在api模块下 新建一个DeptClientServiceFallBack类实现FallbackFactory<DeptClientService>接口
+而且，要在该类上添加@Component注解，然后在DeptClientService配置的@FeignClient添加FallbackClass属性
+最后在consumer-dept-feign模块下添加
+feign: 
+  hystrix: #开启hystrix
+    enabled: true 
+开启hystrix降级
+
+服务熔断：一般是某个服务故障或者异常引起的，类似与现实世界的保险丝，当某个异常条件被触发时，直接熔断整个服务，而不是一直等待此服务超时
+
+服务降级：
+	当某个服务熔断之后，服务器将不在被调用，此时客户端可以自己准备一个本地的fallback回调，返回一个缺省值
+	这样做，虽然服务水平下降，但好歹可用，比直接挂点强
+http://localhost:9001/hystrix  运行hystrix-dashboard 输入这个网址开启图形化监控
+http://localhost:8001/hystrix.stream  以ping的方式监控
+
+zuul包含了对请求的路由和过滤两个主要的功能：
+	其中路由功能负责将外部请求转发到具体的微服务实例上，是实现外部访问统一入口的基础
+	而过滤器功能则负责对请求的处理过程进行干预，是实现请求校验、服务聚合等功能的基础
+zuul和Eureka进行整合，将zuul自身注册到eureka服务治理下的应用，同时从eureka中或得其他为服务的信息，也即以后的访问微服务都是
+通过zuul跳转后获得的
+http://localhost:8001/dept/get/2
+http://myzuul.com:9527/microservicecloud-dept/dept/get/2    通过网关访问资源
+
+springcloudconfig分为服务端和客户端两部分 ：集中管理配置文件
+	服务端也称为分布式配置中心，他是一个独立的微服务应用，用来连接服务器并为客户端提供过去配置信息，加密/解密信息等访问接口
+	客户端则时通过指定的配置中心来管理应用资源，以及与业务相关的配置内容，并在启动的时候从配置中心获取和加载配置信息
+	配置服务器默认采用git来存储配置信息，这样就有助于对环境配置进行版本管理，并且可以通过git客户端工具来方便的管理和访问配置内容
+
+application.yml是用户级的资源配置项
+bootstrap.yml是系统级的，优先级更高

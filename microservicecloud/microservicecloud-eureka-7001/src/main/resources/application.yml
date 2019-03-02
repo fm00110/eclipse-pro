@@ -1,0 +1,10 @@
+eureka: 
+  client: 
+    fetch-registry: false   #false表示自己就是注册中心，我的职责就是维护服务时例，并不需要去检索服务
+    register-with-eureka: false   #false表示不向注册中心注册自己
+    service-url:    ##设置与eureka server交互的地址查询服务和注册服务,这是集群配置，此处配置的是其他服务器地址
+      defaultZone: http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/  
+  instance: 
+    hostname: eureka7001.com    #eureka服务端的实例名称  ,在系统文件中修改了hosts文件，做了域名映射,这个对应的也是127.0.0.1
+server: 
+  port: 7001
