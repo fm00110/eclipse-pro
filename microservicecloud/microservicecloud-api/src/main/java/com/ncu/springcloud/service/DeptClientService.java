@@ -12,7 +12,8 @@ import com.ncu.springcloud.entities.Dept;
 @FeignClient(value = "MICROSERVICECLOUD-DEPT", fallbackFactory = DeptClientServiceFallbackFactory.class) //
 public interface DeptClientService {
 
-	@RequestMapping(value = "/dept/add", method = RequestMethod.POST)
+	@RequestMapping(value = "/dept/add", method = RequestMethod.POST)//这里是调用服务端的地址，http:MICROSERVICECLOUD-DEPT/dept/add
+	
 	public boolean addDept(Dept dept);
 
 	@RequestMapping(value = "/dept/get/{id}", method = RequestMethod.GET)
